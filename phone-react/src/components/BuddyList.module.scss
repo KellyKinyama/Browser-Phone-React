@@ -1,0 +1,176 @@
+@use "@styles/abstracts" as *;
+
+.emptyState {
+  padding: space(12) space(6);
+  text-align: center;
+  color: var(--text-dim);
+
+  i {
+    font-size: 40px;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: space(3) 0 space(1);
+    font-weight: 600;
+    color: var(--text);
+  }
+}
+
+.buddyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.buddyItem {
+  display: flex;
+  align-items: center;
+  gap: space(2) + 2px;
+  padding: space(2) + 2px space(3) + 2px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover {
+    background: var(--hover);
+  }
+
+  &.selected {
+    background: var(--selected-bg);
+    border-left-color: var(--selected-border);
+  }
+
+  &.activeCall {
+    border-left-color: var(--ok);
+  }
+
+  &.heldCall {
+    border-left-color: var(--warn);
+  }
+}
+
+.buddyText {
+  flex: 1;
+  min-width: 0;
+}
+
+.buddyName {
+  font-weight: 500;
+  @include truncate;
+}
+
+.buddyPresence {
+  font-size: 12px;
+  color: var(--text-dim);
+  @include truncate;
+}
+
+.missedBadge {
+  background: var(--danger);
+  color: #fff;
+  border-radius: radius(pill);
+  padding: 1px 7px;
+  font-size: 12px;
+  flex: none;
+  animation: badgePulse 1.4s ease-in-out 2;
+}
+
+@keyframes badgePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: space(1);
+  flex: none;
+
+  .buddyItem:hover & {
+    display: none;
+  }
+}
+
+.activity {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.actions {
+  display: none;
+  align-items: center;
+  gap: space(1);
+  flex: none;
+
+  .buddyItem:hover & {
+    display: flex;
+  }
+}
+
+.quick {
+  @include button-reset;
+  width: 30px;
+  height: 30px;
+  border-radius: radius(pill);
+  color: var(--ok);
+  display: inline-grid;
+  place-items: center;
+
+  &:hover {
+    background: var(--surface-3);
+  }
+}
+
+.avatarWrap {
+  position: relative;
+  flex: none;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: radius(pill);
+  object-fit: cover;
+  background: var(--surface-3);
+  display: block;
+}
+
+.avatarDot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--surface);
+}
+
+.pin {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-right: space(1);
+}
+
+.kebab {
+  @include button-reset;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: radius(pill);
+  color: var(--text-dim);
+
+  &:hover {
+    background: var(--surface-3);
+    color: var(--text);
+  }
+}

@@ -1,0 +1,36 @@
+@use "@styles/abstracts" as *;
+
+.menu {
+  position: fixed;
+  min-width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: radius(md);
+  @include elevation(2);
+  padding: space(1);
+  z-index: z(menu);
+}
+
+.item {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  width: 100%;
+  padding: space(2) space(3);
+  border-radius: radius(sm);
+  color: var(--text);
+
+  &:hover {
+    background: var(--hover);
+  }
+
+  i {
+    width: 16px;
+    text-align: center;
+  }
+}
+
+.danger {
+  color: var(--danger);
+}

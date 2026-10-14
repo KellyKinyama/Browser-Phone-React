@@ -1,0 +1,91 @@
+@use "@styles/abstracts" as *;
+
+// Shared UI primitives used across components.
+
+.iconButton {
+  @include button-reset;
+  width: 38px;
+  height: 38px;
+  border-radius: radius(lg);
+  color: var(--text);
+  font-size: 16px;
+  display: inline-grid;
+  place-items: center;
+
+  &:hover {
+    background: var(--surface-2);
+  }
+  &.active {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.roundButton {
+  @include button-reset;
+  width: 32px;
+  height: 32px;
+  border-radius: radius(pill);
+  color: var(--text);
+  display: inline-grid;
+  place-items: center;
+
+  &:hover {
+    background: var(--surface-2);
+  }
+}
+
+.callButton {
+  @include button-reset;
+  width: 56px;
+  height: 56px;
+  border-radius: radius(pill);
+  color: #fff;
+  font-size: 20px;
+  display: inline-grid;
+  place-items: center;
+  @include elevation(1);
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.audio,
+.video {
+  background: var(--ok);
+}
+.hangup {
+  background: var(--danger);
+}
+
+.statusDot {
+  width: 9px;
+  height: 9px;
+  border-radius: radius(pill);
+  background: var(--dot-offline);
+  display: inline-block;
+  flex: none;
+}
+
+.dotOffline {
+  background: var(--dot-offline);
+}
+.dotOnline {
+  background: var(--dot-online);
+}
+.dotInUse,
+.dotBusy {
+  background: var(--dot-busy);
+}
+.dotRinging {
+  background: var(--dot-ringing);
+}
+.dotHold {
+  background: var(--warn);
+}

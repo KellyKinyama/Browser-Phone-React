@@ -1,0 +1,182 @@
+@use "@styles/abstracts" as *;
+
+.callArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: space(6);
+}
+
+.videoActive {
+  justify-content: flex-start;
+  padding: space(4);
+}
+
+.welcomeIcon {
+  font-size: 56px;
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.callArea p {
+  color: var(--text-dim);
+}
+
+.callAvatar {
+  width: 96px;
+  height: 96px;
+  border-radius: radius(pill);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  font-size: 44px;
+  color: var(--text-dim);
+  margin-bottom: space(4);
+}
+
+.ringing {
+  animation: ringPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 120, 243, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 18px rgba(52, 120, 243, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 120, 243, 0);
+  }
+}
+
+.callName {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.callNumber {
+  color: var(--text-dim);
+}
+
+.callState {
+  margin-top: space(2);
+  font-variant-numeric: tabular-nums;
+}
+
+.callControls {
+  margin-top: space(7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: space(4);
+}
+
+.ctrl {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.ctrlActive {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+}
+
+.dtmfPad {
+  margin-top: space(5);
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  gap: space(2) + 2px;
+  justify-content: center;
+}
+
+.dtmfKey {
+  @include button-reset;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: radius(lg);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 20px;
+
+  &:hover {
+    background: var(--surface-3);
+  }
+}
+
+.timeline {
+  margin-top: space(5);
+  width: min(360px, 100%);
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: radius(lg);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  @include clean-scroller;
+}
+
+.timelineRow {
+  display: flex;
+  gap: space(3);
+  padding: space(2) space(3);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.timelineTime {
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.timelineEmpty {
+  padding: space(3);
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.attendedBanner {
+  margin-top: space(4);
+  padding: space(3);
+  border-radius: radius(lg);
+  background: color-mix(in srgb, var(--warn) 18%, var(--surface));
+  border: 1px solid var(--warn);
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
+  align-items: center;
+}
+
+.bannerActions {
+  display: flex;
+  gap: space(2);
+}
+
+.bannerPrimary {
+  @include button-reset;
+  padding: space(2) space(4);
+  border-radius: radius(md);
+  background: var(--ok);
+  color: #fff;
+}
+
+.bannerBtn {
+  @include button-reset;
+  padding: space(2) space(4);
+  border-radius: radius(md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+}

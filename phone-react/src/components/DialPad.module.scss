@@ -1,0 +1,76 @@
+@use "@styles/abstracts" as *;
+
+.dialPad {
+  padding: space(4);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.dialInputRow {
+  display: flex;
+  gap: space(2);
+  margin-bottom: space(4);
+}
+
+.dialInput {
+  flex: 1;
+  font-size: 22px;
+  text-align: center;
+  padding: space(2);
+  border: 1px solid var(--border);
+  border-radius: radius(lg);
+  background: var(--surface-2);
+  color: var(--text);
+
+  &:focus {
+    @include focus-ring;
+  }
+}
+
+.dialKeys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: space(2) + 2px;
+}
+
+.dialKey {
+  @include button-reset;
+  aspect-ratio: 1.6;
+  border: 1px solid var(--border);
+  border-radius: radius(lg);
+  background: var(--surface-2);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--surface-3);
+  }
+}
+
+.dialDigit {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.dialLetters {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+.dialActions {
+  display: flex;
+  justify-content: center;
+  gap: space(6);
+  margin-top: space(5);
+}
+
+.dialHint {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  margin-top: space(3) + 2px;
+}

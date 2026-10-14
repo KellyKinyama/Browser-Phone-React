@@ -1,0 +1,72 @@
+@use "tokens" as *;
+
+// Truncate a single line of text with ellipsis.
+@mixin truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Visually hide but keep accessible to screen readers.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@mixin no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+@mixin button-reset {
+  appearance: none;
+  border: none;
+  background: none;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+@mixin focus-ring {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+// Thin, themed scrollbar (replaces the original .cleanScroller).
+@mixin clean-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: radius(pill);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@mixin elevation($level: 1) {
+  @if $level == 1 {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  } @else if $level == 2 {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  } @else if $level == 3 {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  }
+}

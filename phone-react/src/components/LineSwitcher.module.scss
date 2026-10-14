@@ -1,0 +1,52 @@
+@use "@styles/abstracts" as *;
+
+.switcher {
+  display: flex;
+  gap: space(2);
+  padding: space(2) space(3);
+  overflow-x: auto;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border-bottom: 1px solid var(--border);
+  @include clean-scroller;
+}
+
+.chip {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  padding: space(1) space(2) + 2px;
+  border: 1px solid var(--border);
+  border-radius: radius(pill);
+  background: var(--surface-2);
+  color: var(--text);
+  white-space: nowrap;
+
+  &.active {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border-color: var(--accent);
+  }
+
+  i {
+    font-size: 11px;
+    opacity: 0.8;
+  }
+}
+
+.lineNo {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: radius(pill);
+  background: var(--line-icon);
+  color: #fff;
+  font-size: 11px;
+  flex: none;
+}
+
+.name {
+  max-width: 120px;
+  @include truncate;
+}

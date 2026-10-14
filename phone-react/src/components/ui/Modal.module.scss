@@ -1,0 +1,42 @@
+@use "@styles/abstracts" as *;
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-scrim);
+  display: grid;
+  place-items: center;
+  z-index: z(dialog);
+}
+
+.modal {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: radius(lg);
+  @include elevation(3);
+  max-width: calc(100vw - #{space(8)});
+  max-height: calc(100vh - #{space(8)});
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  padding: space(3) space(4);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+.body {
+  padding: space(4);
+  overflow-y: auto;
+  @include clean-scroller;
+}
+
+.footer {
+  padding: space(3) space(4);
+  display: flex;
+  justify-content: flex-end;
+  gap: space(2);
+  border-top: 1px solid var(--border);
+}

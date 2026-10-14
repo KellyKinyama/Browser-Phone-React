@@ -1,0 +1,47 @@
+@use "../abstracts/tokens" as *;
+
+// Light theme -> semantic CSS custom properties.
+// Values mirror the original phone.light.css for UI/UX parity.
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f6f6f6;
+  --surface: #ffffff; // streamSection
+  --surface-2: #f6f6f6; // profile / highlight sections
+  --surface-3: #e1e1e1; // neutral raised
+  --text: #000000;
+  --text-dim: #808080; // presenceText
+  --text-faint: #999999;
+  --border: #cccccc;
+  --border-strong: #999999;
+
+  --accent: #3478f3;
+  --accent-contrast: #ffffff;
+  --danger: #dc0000; // hangup / reject
+  --ok: #25962f; // dial button green
+  --answer: #059609;
+  --warn: #cc9009;
+
+  --hover: #e1e1e1;
+  --selected-bg: #e1e1e1;
+  --selected-border: #3478f3;
+  --search-bg: #eaeaea;
+  --search-text: #333333;
+
+  --active-call: #40bd3f;
+  --hold: #999999;
+  --line-icon: #cc9009;
+
+  --chat-bg: #efeadc;
+  --chat-theirs: #ecf7e6;
+  --chat-ours: #f1f9ff;
+
+  --dot-offline: #cccccc;
+  --dot-online: #40bd3f;
+  --dot-busy: #dc0000;
+  --dot-ringing: #cc9009;
+
+  --overlay-scrim: rgba(0, 0, 0, 0.35);
+  --wallpaper: url("/wallpaper.light.webp");
+}

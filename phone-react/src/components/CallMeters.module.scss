@@ -1,0 +1,37 @@
+@use "@styles/abstracts" as *;
+
+.meters {
+  display: flex;
+  flex-direction: column;
+  gap: space(1) + 1px;
+  width: min(220px, 70%);
+  margin: space(3) auto 0;
+}
+
+.meter {
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  color: var(--text-dim);
+  font-size: 13px;
+
+  i {
+    width: 16px;
+    text-align: center;
+  }
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  border-radius: radius(pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--active-call);
+  transition: width 90ms linear;
+}

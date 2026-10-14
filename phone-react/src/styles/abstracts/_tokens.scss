@@ -1,0 +1,81 @@
+@use "sass:map";
+
+// ============================================================================
+// Design tokens (compile-time SCSS). Values seeded from the original
+// Browser-Phone stylesheets for UI/UX parity. Runtime theming is done via CSS
+// custom properties declared in styles/themes/*; use var(--token) in components,
+// and these SCSS maps/functions for structural values (z-index, spacing, radii).
+// ============================================================================
+
+// Brand / semantic (source-of-truth hexes; themes map these to --accent etc.)
+$accent: #3478f3;
+$accent-strong: #1f5fd0;
+$danger: #dc0000;
+$danger-strong: #d80000;
+$ok: #37b24d;
+$warn: #ff9900;
+
+// Neutral ramp (ordered light -> dark), from original usage
+$white: #ffffff;
+$n-100: #f3f3f3;
+$n-200: #e6e6e6;
+$n-300: #e1e1e1;
+$n-400: #cccccc;
+$n-500: #999999;
+$n-600: #666666;
+$n-700: #404040;
+$n-750: #3e3e3e;
+$n-800: #333333;
+$n-900: #292929;
+$n-950: #222222;
+$black: #000000;
+
+// Dark theme surfaces (original)
+$dark-header: #092139;
+$dark-accent: #416493;
+
+// Spacing: 4px base grid
+$space-unit: 4px;
+
+// Radii
+$radius: (
+  sm: 3px,
+  md: 4px,
+  lg: 8px,
+  xl: 12px,
+  pill: 999px
+);
+
+// Z-index scale (parity with original: 1,10,50,80,99,998,999)
+$z: (
+  base: 1,
+  raised: 10,
+  sticky: 50,
+  header: 80,
+  loading: 99,
+  menu: 998,
+  dialog: 999,
+  toast: 1000
+);
+
+// Layout metrics (parity)
+$sidebar-width: 320px;
+$profile-row-height: 50px;
+$search-row-height: 35px;
+
+// Typography
+$font-family: "Roboto", Arial, Helvetica, sans-serif;
+$font-size-base: 15px;
+
+// Helpers to read maps
+@function z($key) {
+  @return map.get($z, $key);
+}
+
+@function radius($key) {
+  @return map.get($radius, $key);
+}
+
+@function space($n) {
+  @return $space-unit * $n;
+}

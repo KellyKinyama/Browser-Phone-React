@@ -1,0 +1,46 @@
+@use "../abstracts/tokens" as *;
+
+// Dark theme -> semantic CSS custom properties.
+// Values mirror the original phone.dark.css for UI/UX parity.
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #222222;
+  --surface: #292929; // profileContainer / sidebar
+  --surface-2: #222222; // streamSection / content
+  --surface-3: #404040; // selected / raised
+  --text: #cccccc;
+  --text-dim: #999999; // presenceText
+  --text-faint: #888888;
+  --border: #3e3e3e;
+  --border-strong: #404040;
+
+  --accent: #3478f3;
+  --accent-contrast: #ffffff;
+  --danger: #dc0000;
+  --ok: #067d0f; // dial button green (dark)
+  --answer: #059609;
+  --warn: #cc9009;
+
+  --hover: #333333;
+  --selected-bg: #404040;
+  --selected-border: #3478f3;
+  --search-bg: #222222;
+  --search-text: #888888;
+
+  --active-call: #40bd3f;
+  --hold: #999999;
+  --line-icon: #cc9009;
+
+  --chat-bg: #292929;
+  --chat-theirs: #2c423a;
+  --chat-ours: #2b3842;
+
+  --dot-offline: #666666;
+  --dot-online: #40bd3f;
+  --dot-busy: #dc0000;
+  --dot-ringing: #cc9009;
+
+  --overlay-scrim: rgba(0, 0, 0, 0.55);
+  --wallpaper: url("/wallpaper.dark.webp");
+}

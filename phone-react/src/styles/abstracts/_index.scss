@@ -1,0 +1,6 @@
+// Barrel for the SCSS design system. Components do:
+//   @use "@styles/abstracts" as *;
+// to access tokens, functions, mixins and breakpoint helpers.
+@forward "tokens";
+@forward "breakpoints";
+@forward "mixins";

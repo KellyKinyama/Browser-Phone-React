@@ -1,0 +1,131 @@
+@use "@styles/abstracts" as *;
+
+.stage {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 240px;
+  background: #000;
+  border-radius: radius(lg);
+  overflow: hidden;
+  margin-top: space(3);
+}
+
+.remote {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.local {
+  position: absolute;
+  right: space(3);
+  bottom: space(3);
+  width: 28%;
+  max-width: 180px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: radius(md);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: #111;
+  transform: scaleX(-1); // mirror local preview
+}
+
+.localScreen {
+  transform: none; // don't mirror a shared screen
+  object-fit: contain;
+}
+
+.localOff {
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22px;
+  transform: none;
+}
+
+.badge,
+.mutedBadge {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: space(1) + 1px;
+  padding: space(1) space(2);
+  border-radius: radius(pill);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+}
+
+.badge {
+  top: space(3);
+  left: space(3);
+}
+
+.mutedBadge {
+  bottom: space(3);
+  left: space(3);
+  color: var(--danger);
+}
+
+.stageTools {
+  position: absolute;
+  top: space(3);
+  right: space(3);
+  display: flex;
+  gap: space(2);
+}
+
+.sourceWrap {
+  position: relative;
+}
+
+.toolBtn {
+  @include button-reset;
+  width: 34px;
+  height: 34px;
+  border-radius: radius(md);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  display: grid;
+  place-items: center;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.75);
+  }
+}
+
+.sourceMenu {
+  position: absolute;
+  top: calc(100% + #{space(1)});
+  right: 0;
+  min-width: 170px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: radius(md);
+  @include elevation(2);
+  overflow: hidden;
+  z-index: z(menu);
+
+  button {
+    @include button-reset;
+    display: flex;
+    align-items: center;
+    gap: space(2);
+    width: 100%;
+    padding: space(2) space(3);
+    color: var(--text);
+    font-size: 13px;
+
+    i {
+      width: 16px;
+      text-align: center;
+      color: var(--text-dim);
+    }
+
+    &:hover {
+      background: var(--surface-2);
+    }
+  }
+}

@@ -1,0 +1,54 @@
+@use "@styles/abstracts" as *;
+
+.form {
+  display: grid;
+  gap: space(2) + 2px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+  font-size: 13px;
+
+  input,
+  select {
+    padding: space(2);
+    border: 1px solid var(--border);
+    border-radius: radius(md);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 14px;
+
+    &:focus {
+      @include focus-ring;
+    }
+  }
+}
+
+.btn {
+  @include button-reset;
+  padding: space(2) space(4);
+  border-radius: radius(md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+
+  &:hover {
+    background: var(--surface-3);
+  }
+}
+
+.primary {
+  @include button-reset;
+  padding: space(2) space(4);
+  border-radius: radius(md);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}

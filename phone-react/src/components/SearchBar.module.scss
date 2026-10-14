@@ -1,0 +1,55 @@
+@use "@styles/abstracts" as *;
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  padding: space(2) space(3);
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  padding: space(1) space(2);
+  background: var(--search-bg);
+  border-radius: radius(md);
+  color: var(--search-text);
+
+  i {
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+    font-size: 14px;
+  }
+}
+
+.clear {
+  @include button-reset;
+  color: var(--text-dim);
+  padding: 2px;
+}
+
+.sort {
+  flex: none;
+  max-width: 96px;
+  border: 1px solid var(--border);
+  border-radius: radius(md);
+  background: var(--surface-2);
+  color: var(--text);
+  padding: space(1) space(2);
+  font-size: 13px;
+}

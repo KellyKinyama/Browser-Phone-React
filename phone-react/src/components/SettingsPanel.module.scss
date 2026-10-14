@@ -1,0 +1,131 @@
+@use "@styles/abstracts" as *;
+
+.settingsPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  h3 {
+    margin: space(4) + 2px 0 space(2);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: space(2) space(2) 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  @include clean-scroller;
+}
+
+.tab,
+.tabActive {
+  @include button-reset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: space(2) space(2) + 1px;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim);
+  font-size: 11px;
+  white-space: nowrap;
+
+  i {
+    font-size: 15px;
+  }
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.tabActive {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tabBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: space(4);
+  @include clean-scroller;
+}
+
+.linkButton {
+  @include button-reset;
+  display: inline-flex;
+  align-items: center;
+  gap: space(2);
+  margin-bottom: space(3);
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+  margin-bottom: space(2) + 2px;
+  font-size: 13px;
+
+  input,
+  select {
+    padding: space(2);
+    border: 1px solid var(--border);
+    border-radius: radius(md) + 2px;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 14px;
+
+    &:focus {
+      @include focus-ring;
+    }
+  }
+}
+
+.checkField {
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  margin-bottom: space(2) + 2px;
+  font-size: 13px;
+  cursor: pointer;
+
+  input {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.settingsActions {
+  display: flex;
+  gap: space(2) + 2px;
+  padding: space(3) space(4);
+  border-top: 1px solid var(--border);
+
+  button {
+    @include button-reset;
+    padding: space(2) + 1px space(4);
+    border: 1px solid var(--border);
+    border-radius: radius(lg);
+    background: var(--surface-2);
+    color: var(--text);
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+}
+
+.primaryButton {
+  background: var(--accent) !important;
+  color: var(--accent-contrast) !important;
+  border-color: var(--accent) !important;
+}

@@ -1,0 +1,16 @@
+@use "tokens" as *;
+
+// Single breakpoint drives the original's wide/narrow layout swap.
+$bp-narrow: 920px;
+
+@mixin narrow {
+  @media (max-width: $bp-narrow) {
+    @content;
+  }
+}
+
+@mixin wide {
+  @media (min-width: ($bp-narrow + 1)) {
+    @content;
+  }
+}

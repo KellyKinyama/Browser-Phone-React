@@ -1,0 +1,4 @@
+// Global style entry. Imported once in main.tsx.
+@use "themes/light";
+@use "themes/dark";
+@use "base/reset";
