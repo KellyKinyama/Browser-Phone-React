@@ -44,8 +44,8 @@ export default function App() {
   const breakpoint = useAppStore((s) => s.breakpoint);
   const showList = useAppStore((s) => s.showList);
   const inStream = useAppStore((s) => s.selectedLineNumber !== null);
-  const chatConnected = useAppStore((s) => s.chatStatus === "connected");
   const chatPeer = useAppStore((s) => s.chatSelectedPeer);
+  const selectedBuddyId = useAppStore((s) => s.selectedBuddyId);
   useTheme();
   useBreakpoint();
 
@@ -63,7 +63,7 @@ export default function App() {
 
   const narrow = breakpoint === "narrow";
   const inChatStream =
-    chatConnected && !!chatPeer && (activePanel === "chat" || activePanel === "contacts");
+    (activePanel === "contacts" || activePanel === "chat") && (!!chatPeer || !!selectedBuddyId);
   const contentActive = inStream || inChatStream;
   const showSidebar = !narrow || !contentActive;
   const showContent = !narrow || contentActive;

@@ -522,6 +522,44 @@
   }
 }
 
+.callRow {
+  display: flex;
+  align-items: center;
+  gap: space(2);
+  align-self: center;
+  max-width: 85%;
+  padding: space(1) + 1px space(3);
+  margin: space(1) 0;
+  border-radius: radius(pill);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-size: 13px;
+
+  i {
+    color: var(--ok);
+  }
+}
+
+.callMissed {
+  i {
+    color: var(--danger);
+  }
+}
+
+.callText {
+  color: var(--text);
+}
+
+.callDur,
+.callTime {
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.callTime {
+  margin-left: auto;
+}
+
 .imageThumb {
   @include button-reset;
   display: block;

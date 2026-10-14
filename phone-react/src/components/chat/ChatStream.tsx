@@ -3,7 +3,19 @@ import clsx from "clsx";
 import { useAppStore } from "../../state/store";
 import { chatClient } from "../../state/chatService";
 import type { FileMeta } from "../../services/chat/ChatClient";
+import type { ChatMessage } from "../../state/slices/chatSlice";
+import type { CallRecord } from "../../services/db";
 import styles from "./ChatPanel.module.scss";
+
+type StreamItem =
+  | { kind: "msg"; at: number; key: string; m: ChatMessage }
+  | { kind: "call"; at: number; key: string; c: CallRecord };
+
+function formatDuration(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
 
 const REACT_EMOJIS = ["\u{1F44D}", "\u2764\uFE0F", "\u{1F602}", "\u{1F62E}", "\u{1F622}", "\u{1F64F}"];
 
@@ -137,6 +149,9 @@ export function ChatStream() {
   const invite = useAppStore((s) => s.chatInvite);
   const sendFile = useAppStore((s) => s.chatSendFile);
   const uploading = useAppStore((s) => s.chatUploading);
+  const selectedBuddyId = useAppStore((s) => s.selectedBuddyId);
+  const buddies = useAppStore((s) => s.buddies);
+  const callHistory = useAppStore((s) => s.callHistory);
 
   const [draft, setDraft] = useState("");
   const [reactOpen, setReactOpen] = useState<string | null>(null);
@@ -154,6 +169,15 @@ export function ChatStream() {
     seenIds.add(m.id);
     return true;
   });
+
+  // Interleave chat messages with this contact's call history (CDRs), oldest-first.
+  const callRecords = selectedBuddyId
+    ? callHistory.filter((r) => r.buddy === selectedBuddyId)
+    : [];
+  const items: StreamItem[] = [
+    ...messages.map((m) => ({ kind: "msg" as const, at: m.at, key: m.id, m })),
+    ...callRecords.map((c) => ({ kind: "call" as const, at: c.startedAt, key: c.id, c }))
+  ].sort((a, b) => a.at - b.at);
 
   const stopTyping = () => {
     window.clearTimeout(idleTimer.current);
@@ -186,9 +210,9 @@ export function ChatStream() {
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
-  }, [messages.length, selectedPeer]);
+  }, [messages.length, callRecords.length, selectedPeer, selectedBuddyId]);
 
-  if (!selectedPeer) {
+  if (!selectedPeer && !selectedBuddyId) {
     return (
       <div className={styles.streamEmpty}>
         <i className="fa fa-comments" />
@@ -197,12 +221,116 @@ export function ChatStream() {
     );
   }
 
-  const selectedRoom = rooms.find((r) => r.id === selectedPeer);
+  const selectedRoom = selectedPeer ? rooms.find((r) => r.id === selectedPeer) : undefined;
+  const buddy = selectedBuddyId ? buddies.find((b) => b.identity === selectedBuddyId) : undefined;
   const peerName =
-    selectedRoom?.name ?? contacts.find((c) => c.id === selectedPeer)?.name ?? selectedPeer;
-  const occupants = roomOccupants[selectedPeer] ?? [];
+    selectedRoom?.name ??
+    (selectedPeer ? contacts.find((c) => c.id === selectedPeer)?.name : undefined) ??
+    buddy?.callerIdName ??
+    selectedPeer ??
+    selectedBuddyId ??
+    "";
+  const isChatCapable = !!selectedPeer;
+  const occupants = selectedPeer ? roomOccupants[selectedPeer] ?? [] : [];
   const invitable = contacts.filter(
     (c) => !(selectedRoom?.members ?? []).includes(c.id) && !occupants.includes(c.id)
+  );
+
+  const renderMessage = (m: ChatMessage) => {
+    if (retracted[m.id]) {
+      return <div className={clsx(styles.bubble, styles.retracted)}>Message deleted</div>;
+    }
+    const agg = aggregate(reactions[m.id]);
+    return (
+      <div className={clsx(styles.row, m.fromMe ? styles.rowMine : styles.rowTheirs)}>
+        {m.fromName && <span className={styles.sender}>{m.fromName}</span>}
+        <div className={clsx(styles.bubble, m.fromMe ? styles.mine : styles.theirs)}>
+          {m.body && <span>{m.body}</span>}
+          {m.file && <FileAttachment file={m.file} token={token} onOpenImage={setLightbox} />}
+          {m.fromMe && !isRoom && (
+            <span
+              className={clsx(styles.tick, m.status === "read" && styles.tickRead)}
+              aria-label={m.status ?? "sent"}
+            >
+              {m.status === "sent" || !m.status ? "\u2713" : "\u2713\u2713"}
+            </span>
+          )}
+        </div>
+        {!isRoom && (
+          <div className={styles.msgActions}>
+            <button
+              type="button"
+              className={styles.reactBtn}
+              aria-label="Add reaction"
+              onClick={() => setReactOpen(reactOpen === m.id ? null : m.id)}
+            >
+              <i className="fa fa-smile-o" />
+            </button>
+            {m.fromMe && (
+              <button
+                type="button"
+                className={styles.reactBtn}
+                aria-label="Unsend"
+                onClick={() => retract(m.id)}
+              >
+                <i className="fa fa-trash-o" />
+              </button>
+            )}
+          </div>
+        )}
+        {reactOpen === m.id && (
+          <div className={styles.picker}>
+            {REACT_EMOJIS.map((e) => (
+              <button
+                key={e}
+                type="button"
+                onClick={() => {
+                  toggleReaction(m.id, e);
+                  setReactOpen(null);
+                }}
+              >
+                {e}
+              </button>
+            ))}
+          </div>
+        )}
+        {agg.length > 0 && (
+          <div className={styles.reactions}>
+            {agg.map((r) => (
+              <button
+                key={r.emoji}
+                type="button"
+                className={clsx(styles.chip, myId && r.users.includes(myId) && styles.chipMine)}
+                onClick={() => toggleReaction(m.id, r.emoji)}
+              >
+                {r.emoji} {r.count}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderCall = (c: CallRecord) => (
+    <div className={clsx(styles.callRow, c.missed && styles.callMissed)}>
+      <i
+        className={clsx(
+          "fa",
+          c.missed ? "fa-phone" : c.direction === "inbound" ? "fa-arrow-down" : "fa-arrow-up"
+        )}
+      />
+      <span className={styles.callText}>
+        {c.missed ? "Missed call" : c.direction === "inbound" ? "Incoming call" : "Outgoing call"}
+        {c.withVideo ? " · video" : ""}
+      </span>
+      {!c.missed && c.durationSec > 0 && (
+        <span className={styles.callDur}>{formatDuration(c.durationSec)}</span>
+      )}
+      <span className={styles.callTime}>
+        {new Date(c.startedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      </span>
+    </div>
   );
 
   return (
@@ -237,106 +365,32 @@ export function ChatStream() {
       </div>
 
       <div className={styles.messages} ref={listRef}>
-        {messages.length === 0 && (
-          <div className={styles.empty}>No messages with {peerName} yet</div>
+        {items.length === 0 && (
+          <div className={styles.empty}>No history with {peerName} yet</div>
         )}
-        {messages.map((m, i) => {
-          const prev = messages[i - 1];
+        {items.map((it, i) => {
+          const prev = items[i - 1];
           const sep =
-            !prev || new Date(prev.at).toDateString() !== new Date(m.at).toDateString() ? (
-              <div key={`sep-${m.id}`} className={styles.daySep}>
-                <span>{dayLabel(m.at)}</span>
+            !prev || new Date(prev.at).toDateString() !== new Date(it.at).toDateString() ? (
+              <div className={styles.daySep}>
+                <span>{dayLabel(it.at)}</span>
               </div>
             ) : null;
-          if (retracted[m.id]) {
-            return (
-              <div key={m.id}>
-                {sep}
-                <div className={clsx(styles.bubble, styles.retracted)}>Message deleted</div>
-              </div>
-            );
-          }
-          const agg = aggregate(reactions[m.id]);
           return (
-            <div key={m.id}>
+            <div key={it.key}>
               {sep}
-              <div className={clsx(styles.row, m.fromMe ? styles.rowMine : styles.rowTheirs)}>
-              {m.fromName && <span className={styles.sender}>{m.fromName}</span>}
-              <div className={clsx(styles.bubble, m.fromMe ? styles.mine : styles.theirs)}>
-                {m.body && <span>{m.body}</span>}
-                {m.file && <FileAttachment file={m.file} token={token} onOpenImage={setLightbox} />}
-                {m.fromMe && !isRoom && (
-                  <span
-                    className={clsx(styles.tick, m.status === "read" && styles.tickRead)}
-                    aria-label={m.status ?? "sent"}
-                  >
-                    {m.status === "sent" || !m.status ? "\u2713" : "\u2713\u2713"}
-                  </span>
-                )}
-              </div>
-              {!isRoom && (
-                <div className={styles.msgActions}>
-                  <button
-                    type="button"
-                    className={styles.reactBtn}
-                    aria-label="Add reaction"
-                    onClick={() => setReactOpen(reactOpen === m.id ? null : m.id)}
-                  >
-                    <i className="fa fa-smile-o" />
-                  </button>
-                  {m.fromMe && (
-                    <button
-                      type="button"
-                      className={styles.reactBtn}
-                      aria-label="Unsend"
-                      onClick={() => retract(m.id)}
-                    >
-                      <i className="fa fa-trash-o" />
-                    </button>
-                  )}
-                </div>
-              )}
-              {reactOpen === m.id && (
-                <div className={styles.picker}>
-                  {REACT_EMOJIS.map((e) => (
-                    <button
-                      key={e}
-                      type="button"
-                      onClick={() => {
-                        toggleReaction(m.id, e);
-                        setReactOpen(null);
-                      }}
-                    >
-                      {e}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {agg.length > 0 && (
-                <div className={styles.reactions}>
-                  {agg.map((r) => (
-                    <button
-                      key={r.emoji}
-                      type="button"
-                      className={clsx(styles.chip, myId && r.users.includes(myId) && styles.chipMine)}
-                      onClick={() => toggleReaction(m.id, r.emoji)}
-                    >
-                      {r.emoji} {r.count}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+              {it.kind === "msg" ? renderMessage(it.m) : renderCall(it.c)}
             </div>
           );
         })}
-        {typing[selectedPeer] && (
+        {selectedPeer && typing[selectedPeer] && (
           <div className={styles.typing}>{`${peerName} is typing…`}</div>
         )}
       </div>
 
-      <div className={styles.composer}>
-        <input
+      {isChatCapable && (
+        <div className={styles.composer}>
+          <input
           ref={fileRef}
           type="file"
           hidden
@@ -393,7 +447,8 @@ export function ChatStream() {
             ))}
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       {lightbox && (
         <div className={styles.lightbox} onClick={() => setLightbox(null)}>

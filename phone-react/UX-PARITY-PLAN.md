@@ -41,7 +41,9 @@ the content pane is call-only.
   live XMPP chat contacts (read-only projection via `chatContactToBuddy`, keyed by `chatId`).
   Rows expose call actions (if extension) and a message action (if chat-capable); selecting a
   chat contact opens its stream in the content pane from the Contacts panel.
-- Later: interleave call-history/CDR rows into the stream.
+- **Call-history/CDR interleaving (done):** calls are recorded to IndexedDB on end; the contact
+  stream merges chat messages with call rows (incoming/outgoing/missed + duration) by time, with
+  day separators. Call-only contacts show a history-only stream (no composer).
 
 ### P-UX2 — Buddy row richness & hover affordances ✅ done
 - Hover quick-actions (audio / video) fade in on row hover; kebab moved into the hover action row.

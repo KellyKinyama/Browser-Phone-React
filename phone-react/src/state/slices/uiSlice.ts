@@ -99,6 +99,7 @@ export const createUiSlice: AppStateCreator<UiSlice> = (set, get) => ({
     sip.configure(get().settings.account);
     sip.setMedia(get().settings.media);
     await get().loadBuddies();
+    await get().loadCallHistory();
     set({ lang, ready: true }, false, "ui/ready");
   }
 });

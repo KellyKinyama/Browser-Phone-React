@@ -1,10 +1,29 @@
 import type { Line, CallEventType } from "../../types/line";
 import type { SipCallInfo } from "../../services/sip";
+import { callHistoryRepo, type CallRecord } from "../../services/db";
 import { sip } from "../phoneService";
 import type { AppStateCreator } from "../types";
 
+function buildCallRecord(line: Line): CallRecord {
+  const missed = line.direction === "inbound" && line.startedAt == null;
+  const durationSec = line.startedAt ? Math.max(0, Math.round((Date.now() - line.startedAt) / 1000)) : 0;
+  return {
+    id: `cdr-${line.lineNumber}-${Date.now()}`,
+    buddy: line.buddyId || line.displayNumber,
+    direction: line.direction,
+    number: line.displayNumber,
+    startedAt: line.startedAt ?? line.events[0]?.at ?? Date.now(),
+    durationSec,
+    withVideo: line.withVideo,
+    missed,
+    hasRecording: false
+  };
+}
+
 export interface LinesSlice {
   lines: Line[];
+  callHistory: CallRecord[];
+  loadCallHistory: () => Promise<void>;
   selectedLineNumber: number | null;
   nextLineNumber: number;
   dial: (destination: string, withVideo: boolean, opts?: { buddyId?: string; displayName?: string }) => Promise<void>;
@@ -32,14 +51,29 @@ export interface LinesSlice {
   removeLineBySession: (sessionId: string) => void;
 }
 
-export const createLinesSlice: AppStateCreator<LinesSlice> = (set, get) => ({
-  lines: [],
-  selectedLineNumber: null,
-  nextLineNumber: 1,
-  attendedTransfer: null,
-  conferenceActive: false,
+export const createLinesSlice: AppStateCreator<LinesSlice> = (set, get) => {
+  const recorded = new Set<number>();
+  const recordEnd = (line: Line) => {
+    if (recorded.has(line.lineNumber)) return;
+    recorded.add(line.lineNumber);
+    const rec = buildCallRecord(line);
+    void callHistoryRepo.add(rec);
+    set((s) => ({ callHistory: [rec, ...s.callHistory].slice(0, 300) }), false, "lines/cdr");
+  };
 
-  dial: async (destination, withVideo, opts) => {
+  return {
+    lines: [],
+    callHistory: [],
+    loadCallHistory: async () => {
+      const callHistory = await callHistoryRepo.listRecent(300);
+      set({ callHistory }, false, "lines/loadHistory");
+    },
+    selectedLineNumber: null,
+    nextLineNumber: 1,
+    attendedTransfer: null,
+    conferenceActive: false,
+
+    dial: async (destination, withVideo, opts) => {
     const lineNumber = get().nextLineNumber;
     const line: Line = {
       lineNumber,
@@ -242,6 +276,7 @@ export const createLinesSlice: AppStateCreator<LinesSlice> = (set, get) => ({
     if (line?.sessionId) {
       await sip.hangup(line.sessionId);
     } else {
+      if (line) recordEnd(line);
       set(
         (s) => ({ lines: s.lines.filter((l) => l.lineNumber !== lineNumber) }),
         false,
@@ -260,6 +295,8 @@ export const createLinesSlice: AppStateCreator<LinesSlice> = (set, get) => ({
     ),
 
   removeLineBySession: (sessionId) => {
+    const ended = get().lines.find((l) => l.sessionId === sessionId);
+    if (ended) recordEnd(ended);
     set(
       (s) => ({ lines: s.lines.filter((l) => l.sessionId !== sessionId) }),
       false,
@@ -310,10 +347,12 @@ export const createLinesSlice: AppStateCreator<LinesSlice> = (set, get) => ({
   rejectLine: async (lineNumber) => {
     const line = get().lines.find((l) => l.lineNumber === lineNumber);
     if (line?.sessionId) await sip.reject(line.sessionId);
+    if (line) recordEnd(line);
     set(
       (s) => ({ lines: s.lines.filter((l) => l.lineNumber !== lineNumber) }),
       false,
       "lines/reject"
     );
   }
-});
+  };
+};
