@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import clsx from "clsx";
 import { useAppStore } from "../state/store";
 import { useLang } from "../hooks/useLang";
-import { arrangeBuddies, filterBuddies } from "../services/buddies";
+import { arrangeBuddies, filterBuddies, chatContactToBuddy } from "../services/buddies";
 import { buddyAvatar } from "../services/avatars";
 import { Menu, type MenuItem } from "./ui/Menu";
 import { confirmDialog, toast } from "../services/dialogs";
@@ -26,6 +26,9 @@ export function BuddyList() {
   const buddies = useAppStore((s) => s.buddies);
   const lines = useAppStore((s) => s.lines);
   const dial = useAppStore((s) => s.dial);
+  const chatContacts = useAppStore((s) => s.chatContacts);
+  const chatConnected = useAppStore((s) => s.chatStatus === "connected");
+  const chatSelectPeer = useAppStore((s) => s.chatSelectPeer);
   const searchTerm = useAppStore((s) => s.searchTerm);
   const sortBy = useAppStore((s) => s.sortBy);
   const selectedBuddyId = useAppStore((s) => s.selectedBuddyId);
@@ -36,12 +39,22 @@ export function BuddyList() {
 
   const [menu, setMenu] = useState<{ id: string; x: number; y: number } | null>(null);
 
-  const visible = useMemo(
-    () => arrangeBuddies(filterBuddies(buddies, searchTerm), sortBy),
-    [buddies, searchTerm, sortBy]
-  );
+  const visible = useMemo(() => {
+    const linkedIds = new Set(buddies.map((b) => b.chatId).filter(Boolean));
+    const chatBuddies = chatConnected
+      ? chatContacts
+          .filter((c) => !linkedIds.has(c.id))
+          .map((c) => chatContactToBuddy(c.id, c.name, c.presence))
+      : [];
+    return arrangeBuddies(filterBuddies([...buddies, ...chatBuddies], searchTerm), sortBy);
+  }, [buddies, chatContacts, chatConnected, searchTerm, sortBy]);
 
-  if (buddies.length === 0) {
+  const openBuddy = (b: { identity: string; chatId?: string }) => {
+    selectBuddy(b.identity);
+    if (b.chatId && chatConnected) chatSelectPeer(b.chatId);
+  };
+
+  if (buddies.length === 0 && visible.length === 0) {
     return (
       <div className={styles.emptyState}>
         <i className="fa fa-user-plus" />
@@ -92,6 +105,7 @@ export function BuddyList() {
           const call = line ? (line.isOnHold ? "held" : "active") : null;
           const number = b.extNo || b.mobileNumber || b.contactNumber1;
           const activity = formatActivity(b.lastActivity);
+          const isReal = !b.identity.startsWith("chat:");
           return (
             <li
               key={b.identity}
@@ -101,7 +115,7 @@ export function BuddyList() {
                 call === "active" && styles.activeCall,
                 call === "held" && styles.heldCall
               )}
-              onClick={() => selectBuddy(b.identity)}
+              onClick={() => openBuddy(b)}
             >
               <div className={styles.avatarWrap}>
                 <img className={styles.avatar} src={buddyAvatar(b)} alt="" />
@@ -149,18 +163,34 @@ export function BuddyList() {
                     </button>
                   </>
                 )}
-                <button
-                  type="button"
-                  className={styles.kebab}
-                  aria-label="Contact actions"
-                  title="More"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenu({ id: b.identity, x: e.clientX, y: e.clientY });
-                  }}
-                >
-                  <i className="fa fa-ellipsis-v" />
-                </button>
+                {b.chatId && chatConnected && (
+                  <button
+                    type="button"
+                    className={clsx(styles.quick, styles.quickChat)}
+                    aria-label="Message"
+                    title="Message"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openBuddy(b);
+                    }}
+                  >
+                    <i className="fa fa-comment" />
+                  </button>
+                )}
+                {isReal && (
+                  <button
+                    type="button"
+                    className={styles.kebab}
+                    aria-label="Contact actions"
+                    title="More"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMenu({ id: b.identity, x: e.clientX, y: e.clientY });
+                    }}
+                  >
+                    <i className="fa fa-ellipsis-v" />
+                  </button>
+                )}
               </div>
             </li>
           );

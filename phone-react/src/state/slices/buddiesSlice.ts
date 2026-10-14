@@ -68,7 +68,11 @@ export const createBuddiesSlice: AppStateCreator<BuddiesSlice> = (set, get) => (
   },
 
   selectBuddy: (identity) =>
-    set({ selectedBuddyId: identity, selectedLineNumber: null }, false, "buddies/select"),
+    set(
+      { selectedBuddyId: identity, selectedLineNumber: null, chatSelectedPeer: null },
+      false,
+      "buddies/select"
+    ),
 
   setSearchTerm: (searchTerm) => set({ searchTerm }, false, "buddies/setSearchTerm"),
 

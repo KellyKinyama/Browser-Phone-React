@@ -37,8 +37,11 @@ the content pane is call-only.
   `ChatStream` (thread + composer) renders in the content pane.
 - Content priority: active SIP call → `CallArea`; else selected chat peer → `ChatStream`;
   else empty state.
-- Later: interleave call-history/CDR rows into the stream; unify SIP buddies with XMPP
-  contacts into one list.
+- **SIP/XMPP contact unification (done):** the Contacts list merges IndexedDB SIP buddies with
+  live XMPP chat contacts (read-only projection via `chatContactToBuddy`, keyed by `chatId`).
+  Rows expose call actions (if extension) and a message action (if chat-capable); selecting a
+  chat contact opens its stream in the content pane from the Contacts panel.
+- Later: interleave call-history/CDR rows into the stream.
 
 ### P-UX2 — Buddy row richness & hover affordances ✅ done
 - Hover quick-actions (audio / video) fade in on row hover; kebab moved into the hover action row.

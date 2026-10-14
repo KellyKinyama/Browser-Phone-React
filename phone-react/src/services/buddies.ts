@@ -1,6 +1,47 @@
-import type { Buddy, BuddyType } from "../types/buddy";
+import type { Buddy, BuddyType, DeviceState } from "../types/buddy";
 
 export type BuddySortBy = "activity" | "alphabetical" | "extension" | "type";
+
+/** Maps XMPP presence show values to the buddy status-dot states. */
+export function presenceToDevState(presence: string): DeviceState {
+  switch (presence) {
+    case "online":
+      return "dotOnline";
+    case "away":
+    case "dnd":
+    case "xa":
+      return "dotBusy";
+    default:
+      return "dotOffline";
+  }
+}
+
+/** A read-only buddy projection of an XMPP chat contact (not persisted). */
+export function chatContactToBuddy(id: string, name: string, presence: string): Buddy {
+  return {
+    type: "xmpp",
+    identity: `chat:${id}`,
+    chatId: id,
+    callerIdName: name,
+    email: "",
+    desc: "",
+    extNo: "",
+    mobileNumber: "",
+    contactNumber1: "",
+    contactNumber2: "",
+    lastActivity: null,
+    devState: presenceToDevState(presence),
+    presence,
+    presenceText: presence === "online" ? "Online" : presence === "offline" ? "Offline" : presence,
+    missed: 0,
+    imageObjectUrl: "",
+    enableDuringDnd: false,
+    enableSubscribe: false,
+    subscribeUser: "",
+    allowAutoDelete: false,
+    pinned: false
+  };
+}
 
 export interface NewBuddyInput {
   type?: BuddyType;

@@ -62,7 +62,8 @@ export default function App() {
   }
 
   const narrow = breakpoint === "narrow";
-  const inChatStream = activePanel === "chat" && chatConnected && !!chatPeer;
+  const inChatStream =
+    chatConnected && !!chatPeer && (activePanel === "chat" || activePanel === "contacts");
   const contentActive = inStream || inChatStream;
   const showSidebar = !narrow || !contentActive;
   const showContent = !narrow || contentActive;

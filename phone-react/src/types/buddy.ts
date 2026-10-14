@@ -16,6 +16,8 @@ export interface Buddy {
   type: BuddyType;
   identity: string;
   jid?: string;
+  /** XMPP chat peer id when this contact is chat-capable. */
+  chatId?: string;
   callerIdName: string;
   email: string;
   desc: string;
